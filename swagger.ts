@@ -9,6 +9,16 @@ const options: Options = {
       description:
         'A simple CRUD API application made with Express and documented with Swagger',
     },
+    components: {
+      securitySchemes: {
+        Authorization: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          value: 'Bearer <JWT token here>',
+        },
+      },
+    },
   },
   apis: ['./src/routes/*.ts'],
 };

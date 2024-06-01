@@ -16,12 +16,17 @@ const app: Express = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/dar', darRoutes);
+
+app.get('/', (res: Response) => {
+  res.send('Express + TypeScript Server');
+});
 
 mongoose
   .connect(process.env.MONGODB_CONNECTION_STRING || '')

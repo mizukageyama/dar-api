@@ -27,7 +27,7 @@ export async function getUsers(
 
     res.status(200).json({ data: users });
   } catch (error) {
-    console.error('Error getting user:', error);
+    console.error('Error getting user: ', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
@@ -47,7 +47,7 @@ export async function createUser(req: Request, res: Response) {
     const createdUser = await User.create(user);
     return res.status(201).json({ data: createdUser });
   } catch (error) {
-    console.error('Error creating user:', error);
+    console.error('Error creating user: ', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
@@ -71,7 +71,7 @@ export async function updateUser(req: Request, res: Response) {
     }
     return res.status(200).json({ data: updatedUser });
   } catch (error) {
-    console.error('Error updating user:', error);
+    console.error('Error updating user: ', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
@@ -89,7 +89,7 @@ export async function deleteUser(req: Request, res: Response) {
 
     return res.status(204).end();
   } catch (error) {
-    console.error('Error deleting user:', error);
+    console.error('Error deleting user: ', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }

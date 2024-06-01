@@ -1,10 +1,10 @@
 import { Request } from 'express';
 
-interface SignInRequest extends Request {
+interface LoginRequest extends Request {
   email?: string;
   firstName?: string;
   lastName?: string;
   profileUrl?: string;
 }
 
-export { SignInRequest };
+export { LoginRequest };
