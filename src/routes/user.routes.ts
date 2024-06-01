@@ -1,4 +1,10 @@
 import express, { Request, Response } from 'express';
+import {
+  createUser,
+  deleteUser,
+  getUsers,
+  updateUser,
+} from '../api/users/v1/user.controller';
 const router = express.Router();
 router.use(express.json());
 
@@ -7,7 +13,7 @@ router.use(express.json());
  * tags:
  *   - name: Users
  *
- * /users:
+ * /api/users:
  *   get:
  *     summary: Get all users
  *     description: Returns a list of users
@@ -32,6 +38,15 @@ router.use(express.json());
  *           type: integer
  *         required: false
  *         description: Number of users per page
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum:
+ *            - asc
+ *            - desc
+ *         required: false
+ *         description: Sort order of user's last name
  *     responses:
  *       200:
  *         description: Successful response returning users.
@@ -63,7 +78,7 @@ router.use(express.json());
  *       201:
  *         description: Successful response returning created user.
  *
- * /users/{id}:
+ * /api/users/{id}:
  *   patch:
  *     summary: Update existing user
  *     description: Returns updated user details
@@ -111,20 +126,11 @@ router.use(express.json());
  *         description: Successful response deleting user.
  */
 
-router.get('/', (req: Request, res: Response) => {
-  res.json([]);
-});
-
-router.post('/', (req: Request, res: Response) => {
-  res.json([]);
-});
-
-router.patch('/:id', (req: Request, res: Response) => {
-  res.json('Updated');
-});
-
-router.delete('/:id', (req: Request, res: Response) => {
-  res.json('Deleted');
-});
+router.get('/', getUsers);
+router.post('/', createUser);
+router.patch('/:id', updateUser);
+// router.patch('/:id/admin', updateUserToAdmin);
+// router.patch('/upgrade-to-premium', updateUserToPremium);
+router.delete('/:id', deleteUser);
 
 export default router;

@@ -7,7 +7,7 @@ router.use(express.json());
  * tags:
  *   - name: DAR
  *
- * /dar/{userId}:
+ * /api/dar/{userId}:
  *   get:
  *     summary: Get all tasks as DAR
  *     description: Returns a list of task accomplish within the day.

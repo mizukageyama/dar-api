@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { SignInRequest } from '../api/auth/v1/interfaces/customRequest';
-import verifyTokenId from '../middlewares/authMiddlewares';
+import verifyTokenId from '../middlewares/verifyTokenId';
 const router = express.Router();
 router.use(express.json());
 
@@ -9,7 +9,7 @@ router.use(express.json());
  * tags:
  *   - name: Authentication
  *
- * /auth/login:
+ * /api/auth/login:
  *   post:
  *     summary: Sign in user
  *     description: Verifies the user token id. If user exists, returns

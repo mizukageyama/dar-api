@@ -7,7 +7,7 @@ router.use(express.json());
  * tags:
  *   - name: Tasks
  *
- * /tasks/{userId}:
+ * /api/tasks/{userId}:
  *   get:
  *     summary: Get all tasks of user
  *     description: Returns a list of task by user.
