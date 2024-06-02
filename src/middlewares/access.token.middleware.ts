@@ -1,12 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { AuthenticatedRequest } from '../helpers/authenticatedRequest';
 
-module.exports = (
-  req: AuthenticatedRequest,
+export async function verifyAccessToken(
+  req: Request,
   res: Response,
   next: NextFunction
-) => {
+) {
   const token = req.headers.authorization?.split(' ')[1];
 
   if (!token) {
@@ -21,7 +20,13 @@ module.exports = (
       process.env.JWT_TOKEN_SECRET!
     ) as JwtPayload;
 
-    req.userId = decoded.userId;
+    const requestBodyWithUserId = {
+      ...req.body,
+      userId: decoded.userId,
+      userRole: decoded.userRole,
+    };
+    req.body = requestBodyWithUserId;
+
     next();
   } catch (error) {
     if ((error as { name?: string }).name === 'TokenExpiredError') {
@@ -29,4 +34,4 @@ module.exports = (
     }
     res.status(401).send({ message: 'Invalid token.' });
   }
-};
+}

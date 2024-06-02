@@ -32,19 +32,45 @@ export async function getUsers(
   }
 }
 
+export async function getUser(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const { userId, userRole } = req.body;
+
+    let existingUser = await User.findById(id);
+    if (!existingUser) {
+      return res
+        .status(404)
+        .json({ message: `User with id of ${id} does not exist.` });
+    }
+
+    if (userRole !== 'admin') {
+      if (existingUser._id !== userId) {
+        return res
+          .status(403)
+          .json({ message: `You are unauthorized to view other user's task.` });
+      }
+    }
+
+    res.status(200).json({ data: existingUser });
+  } catch (error) {
+    console.error('Error getting task: ', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 export async function createUser(req: Request, res: Response) {
   try {
-    const user = new User(req.body);
-    const { email } = user;
+    const { email, firstName, lastName } = req.body;
 
-    const userExists = await User.findOne({ email });
-    if (userExists) {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
       return res
         .status(400)
         .json({ message: `User with email of ${email} already exists.` });
     }
 
-    const createdUser = await User.create(user);
+    const createdUser = await User.create({ email, firstName, lastName });
     return res.status(201).json({ data: createdUser });
   } catch (error) {
     console.error('Error creating user: ', error);
@@ -55,21 +81,29 @@ export async function createUser(req: Request, res: Response) {
 export async function updateUser(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const user = new User(req.body);
-    const { firstName, lastName } = user;
+    const { userId, userRole, firstName, lastName } = req.body;
 
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
-      { firstName, lastName },
-      { new: true }
-    );
-
-    if (!updatedUser) {
+    let existingUser = await User.findById(id);
+    if (!existingUser) {
       return res
         .status(404)
         .json({ message: `User with id of ${id} does not exist.` });
     }
-    return res.status(200).json({ data: updatedUser });
+
+    if (userRole !== 'admin') {
+      if (existingUser._id !== userId) {
+        return res
+          .status(403)
+          .json({ message: `You are unauthorized to update other user.` });
+      }
+    }
+
+    existingUser.firstName = firstName;
+    existingUser.lastName = lastName;
+
+    await existingUser.updateOne();
+
+    return res.status(200).json({ data: existingUser });
   } catch (error) {
     console.error('Error updating user: ', error);
     res.status(500).json({ error: 'Internal server error' });

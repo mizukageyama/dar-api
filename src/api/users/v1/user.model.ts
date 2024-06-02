@@ -1,18 +1,18 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 const userSchema = new mongoose.Schema(
   {
     email: {
       type: String,
-      required: true,
+      required: [true, 'Email is required!'],
     },
     firstName: {
       type: String,
-      required: true,
+      required: [true, 'First name is required!'],
     },
     lastName: {
       type: String,
-      required: true,
+      required: [true, 'Last name is required!'],
     },
     profileUrl: {
       type: String,
@@ -20,9 +20,10 @@ const userSchema = new mongoose.Schema(
       default: '',
     },
     role: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'Role',
       required: false,
-      default: 'free',
+      default: '1',
     },
   },
   { timestamps: true }

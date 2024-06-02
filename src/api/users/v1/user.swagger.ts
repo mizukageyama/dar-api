@@ -1,13 +1,3 @@
-import express, { Request, Response } from 'express';
-import {
-  createUser,
-  deleteUser,
-  getUsers,
-  updateUser,
-} from '../api/users/v1/user.controller';
-const router = express.Router();
-router.use(express.json());
-
 /**
  * @swagger
  * tags:
@@ -19,6 +9,8 @@ router.use(express.json());
  *     description: Returns a list of users
  *     tags:
  *       - Users
+ *     security:
+ *       - Authorization: []
  *     parameters:
  *       - in: query
  *         name: searchKey
@@ -50,12 +42,20 @@ router.use(express.json());
  *     responses:
  *       200:
  *         description: Successful response returning users.
+ *       401:
+ *         description: Access token is missing or invalid.
+ *       403:
+ *         description: Unauthorized to access administrative actions.
+ *       500:
+ *         description: Internal server error.
  *
  *   post:
  *     summary: Create new user
  *     description: Returns created user details
  *     tags:
  *       - Users
+ *     security:
+ *       - Authorization: []
  *     requestBody:
  *       required: true
  *       content:
@@ -77,20 +77,54 @@ router.use(express.json());
  *     responses:
  *       201:
  *         description: Successful response returning created user.
+ *       401:
+ *         description: Access token is missing or invalid.
+ *       403:
+ *         description: Unauthorized to access administrative actions.
+ *       500:
+ *         description: Internal server error.
  *
  * /api/users/{id}:
- *   patch:
- *     summary: Update existing user
- *     description: Returns updated user details
+ *   get:
+ *     summary: Get user by id
+ *     description: Return user details
  *     tags:
  *       - Users
+ *     security:
+ *       - Authorization: []
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: User ID
+ *         description: User Id
+ *     responses:
+ *       200:
+ *         description: Successful response returning user.
+ *       401:
+ *         description: Access token is missing or invalid.
+ *       404:
+ *         description: User does not exists.
+ *       403:
+ *         description: Unauthorized to access other user.
+ *       500:
+ *         description: Internal server error.
+ *
+ *   patch:
+ *     summary: Update existing user
+ *     description: Returns updated user details
+ *     tags:
+ *       - Users
+ *     security:
+ *       - Authorization: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: User Id
  *     requestBody:
  *       required: true
  *       content:
@@ -108,29 +142,38 @@ router.use(express.json());
  *     responses:
  *       200:
  *         description: Successful response returning updated user.
+ *       401:
+ *         description: Access token is missing or invalid.
+ *       404:
+ *         description: User does not exists.
+ *       403:
+ *         description: Unauthorized to update other user.
+ *       500:
+ *         description: Internal server error.
  *
  *   delete:
  *     summary: Delete existing user
  *     description: Returns success response upon successful deletion.
  *     tags:
  *       - Users
+ *     security:
+ *       - Authorization: []
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: User ID
+ *         description: User Id
  *     responses:
  *       204:
  *         description: Successful response deleting user.
+ *       401:
+ *         description: Access token is missing or invalid.
+ *       404:
+ *         description: User does not exists.
+ *       403:
+ *         description: Unauthorized to access administrative actions.
+ *       500:
+ *         description: Internal server error.
  */
-
-router.get('/', getUsers);
-router.post('/', createUser);
-router.patch('/:id', updateUser);
-// router.patch('/:id/admin', updateUserToAdmin);
-// router.patch('/upgrade-to-premium', updateUserToPremium);
-router.delete('/:id', deleteUser);
-
-export default router;

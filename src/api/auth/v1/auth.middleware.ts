@@ -1,17 +1,12 @@
 import { OAuth2Client } from 'google-auth-library';
-import { NextFunction, Response } from 'express';
-import { LoginRequest } from '../api/auth/v1/interfaces/loginRequest';
+import { Request, NextFunction, Response } from 'express';
 
 const oAuth2Client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET
 );
 
-async function verifyTokenId(
-  req: LoginRequest,
-  res: Response,
-  next: NextFunction
-) {
+async function verifyTokenId(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
   const token = authHeader?.split(' ')[1];
 
@@ -22,15 +17,16 @@ async function verifyTokenId(
   try {
     const ticket = await oAuth2Client.verifyIdToken({
       idToken: token,
-      audience: process.env.IOS_GOOGLE_CLIENT_ID!,
+      audience: [
+        process.env.IOS_APP_GOOGLE_CLIENT_ID!,
+        process.env.ANDROID_APP_GOOGLE_CLIENT_ID!,
+      ],
     });
 
     const payload = ticket.getPayload();
     if (payload) {
-      req.email = payload['email'];
-      req.firstName = payload['given_name'];
-      req.lastName = payload['family_name'];
-      req.profileUrl = payload['profile'];
+      const reqBodyWithEmail = { ...req.body, email: payload['email'] };
+      req.body = reqBodyWithEmail;
 
       next();
     } else {

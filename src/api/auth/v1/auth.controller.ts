@@ -1,5 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
-import { LoginRequest } from './interfaces/loginRequest';
+import { Response, Request } from 'express';
 import User from '../../users/v1/user.model';
 import jwt from 'jsonwebtoken';
 
@@ -15,7 +14,7 @@ function generateRefreshToken(userId: string, userRole: string) {
   });
 }
 
-export async function generateTestToken(req: LoginRequest, res: Response) {
+export async function generateTestToken(req: Request, res: Response) {
   const userId = '665ab020457c9f5c733dbeba';
   const userRole = 'free';
 
@@ -30,25 +29,21 @@ export async function generateTestToken(req: LoginRequest, res: Response) {
   res.status(200).json({ accessToken });
 }
 
-export async function login(
-  req: LoginRequest,
-  res: Response,
-  next: NextFunction
-) {
+export async function login(req: Request, res: Response) {
   try {
-    const { email } = req;
+    const { email } = req.body;
     const user = await User.findOne({ email });
 
     if (user) {
       const userId = user._id.toString();
-      const userRole = user.role!;
+      const userRole = user.role!._id.toString();
 
       const accessToken = generateAccessToken(userId, userRole);
       const refreshToken = generateRefreshToken(userId, userRole);
 
       res.status(200).json({ data: user, accessToken, refreshToken });
     } else {
-      next();
+      res.status(404).json({ error: 'You are not registered' });
     }
   } catch (error) {
     console.error('Error login: ', error);
@@ -56,19 +51,25 @@ export async function login(
   }
 }
 
-export async function register(req: LoginRequest, res: Response) {
+export async function register(req: Request, res: Response) {
   try {
-    const { email, firstName, lastName, profileUrl } = req;
+    const { email, firstName, lastName } = req.body;
+
+    const user = await User.findOne({ email });
+    if (user) {
+      res
+        .status(400)
+        .json({ error: `User with email ${email} already exists.` });
+    }
 
     const newUser = await User.create({
       email,
       firstName,
       lastName,
-      profileUrl,
     });
 
     const userId = newUser._id.toString();
-    const userRole = newUser.role!;
+    const userRole = newUser.role!._id.toString();
 
     const accessToken = generateAccessToken(userId, userRole);
     const refreshToken = generateRefreshToken(userId, userRole);

@@ -3,11 +3,11 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from '../swagger';
-import authRoutes from './routes/auth.routes';
-import userRoutes from './routes/user.routes';
-import taskRoutes from './routes/task.routes';
-import darRoutes from './routes/dar.routes';
 import mongoose from 'mongoose';
+import authRouter from './api/auth/v1/auth.router';
+import userRouter from './api/users/v1/user.router';
+import taskRouter from './api/tasks/v1/task.router';
+import darRouter from './api/dar/v1/dar.router';
 
 dotenv.config();
 
@@ -19,10 +19,10 @@ app.use(cors());
 
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/tasks', taskRoutes);
-app.use('/api/dar', darRoutes);
+app.use('/api/auth', authRouter);
+app.use('/api/users', userRouter);
+app.use('/api/tasks', taskRouter);
+app.use('/api/dar', darRouter);
 
 app.get('/', (res: Response) => {
   res.send('Express + TypeScript Server');
