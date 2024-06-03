@@ -8,6 +8,7 @@ import authRouter from './api/auth/v1/auth.router';
 import userRouter from './api/users/v1/user.router';
 import taskRouter from './api/tasks/v1/task.router';
 import darRouter from './api/dar/v1/dar.router';
+import noteRouter from './api/notes/v1/note.router';
 
 dotenv.config();
 
@@ -23,8 +24,9 @@ app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
 app.use('/api/tasks', taskRouter);
 app.use('/api/dar', darRouter);
+app.use('/api/notes', noteRouter);
 
-app.get('/', (res: Response) => {
+app.use('/', (res: Response) => {
   res.send('Express + TypeScript Server');
 });
 

@@ -25,6 +25,7 @@ const options: Options = {
     './src/api/users/v1/user.swagger.ts',
     './src/api/tasks/v1/task.swagger.ts',
     './src/api/dar/v1/dar.swagger.ts',
+    './src/api/notes/v1/note.swagger.ts',
   ],
 };
 

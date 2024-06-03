@@ -4,14 +4,27 @@
  *   - name: Authentication
  *
  * /api/auth/test-token:
- *   get:
+ *   post:
  *     summary: Get JWT token for testing purposes
  *     description: Returns jwt tokens for testing.
  *     tags:
  *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               password:
+ *                 type: string
+ *             required:
+ *               - password
  *     responses:
  *       200:
- *         description: Successful response with access and refresh token.
+ *         description: Successful response with test access, and refresh token.
+ *       400:
+ *         description: Wrong password.
  *
  * /api/auth/login:
  *   post:

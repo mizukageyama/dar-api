@@ -5,7 +5,7 @@ import verifyTokenId from './auth.middleware';
 const router = express.Router();
 router.use(express.json());
 
-router.get('/test-token', generateTestToken);
+router.post('/test-token', generateTestToken);
 router.post('/login', verifyTokenId, login);
 router.post('/register', verifyTokenId, register);
 

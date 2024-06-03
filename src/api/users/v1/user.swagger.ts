@@ -176,4 +176,32 @@
  *         description: Unauthorized to access administrative actions.
  *       500:
  *         description: Internal server error.
+ *
+ *
+ * /api/users/{id}/admin:
+ *   patch:
+ *     summary: Update existing user to admin
+ *     description: Returns updated admin user details
+ *     tags:
+ *       - Users
+ *     security:
+ *       - Authorization: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: User Id
+ *     responses:
+ *       200:
+ *         description: Successful response returning updated user.
+ *       401:
+ *         description: Access token is missing or invalid.
+ *       404:
+ *         description: User does not exists.
+ *       403:
+ *         description: Unauthorized to update other user to admmin.
+ *       500:
+ *         description: Internal server error.
  */

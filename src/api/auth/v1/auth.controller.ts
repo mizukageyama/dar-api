@@ -18,6 +18,12 @@ export async function generateTestToken(req: Request, res: Response) {
   const userId = '665ab020457c9f5c733dbeba';
   const userRole = 'free';
 
+  const { password = '' } = req.body;
+
+  if (password !== process.env.TEST_TOKEN_PASSWORD!) {
+    res.status(400).json({ error: 'Wrong password.' });
+  }
+
   const accessToken = jwt.sign(
     { userId, userRole },
     process.env.JWT_TOKEN_SECRET!,

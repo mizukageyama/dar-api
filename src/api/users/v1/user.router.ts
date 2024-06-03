@@ -5,6 +5,7 @@ import {
   getUser,
   getUsers,
   updateUser,
+  updateUserToAdmin,
 } from './user.controller';
 import { verifyAdminAccess } from '../../../middlewares/admin.verification.middleware';
 import { verifyAccessToken } from '../../../middlewares/access.token.middleware';
@@ -15,6 +16,12 @@ router.get('/', verifyAccessToken, verifyAdminAccess, getUsers);
 router.get('/:id', verifyAccessToken, getUser);
 router.post('/', verifyAccessToken, verifyAdminAccess, createUser);
 router.patch('/:id', verifyAccessToken, updateUser);
+router.patch(
+  '/:id/admin',
+  verifyAccessToken,
+  verifyAdminAccess,
+  updateUserToAdmin
+);
 router.delete('/:id', verifyAccessToken, verifyAdminAccess, deleteUser);
 
 export default router;

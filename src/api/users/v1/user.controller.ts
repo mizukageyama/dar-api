@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import User from './user.model';
+import Role from './role.model';
 import { PaginationQueryWithSearchKey } from '../../../helpers/paginationQuery';
 
 export async function getUsers(
@@ -101,6 +102,28 @@ export async function updateUser(req: Request, res: Response) {
     existingUser.firstName = firstName;
     existingUser.lastName = lastName;
 
+    await existingUser.updateOne();
+
+    return res.status(200).json({ data: existingUser });
+  } catch (error) {
+    console.error('Error updating user: ', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+export async function updateUserToAdmin(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+
+    let existingUser = await User.findById(id);
+
+    if (!existingUser) {
+      return res
+        .status(404)
+        .json({ message: `User with id of ${id} does not exist.` });
+    }
+
+    // ! existingUser.role! = 2;
     await existingUser.updateOne();
 
     return res.status(200).json({ data: existingUser });
