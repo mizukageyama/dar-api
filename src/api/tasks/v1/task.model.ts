@@ -18,11 +18,10 @@ const taskSchema = new mongoose.Schema(
     status: {
       type: Schema.Types.ObjectId,
       ref: 'Status',
-      required: false,
-      default: 1,
+      required: [true, 'Status is required!'],
     },
   },
-  { timestamps: true }
+  { timestamps: true, collection: 'tasks' }
 );
 
-export default mongoose.model('tasks', taskSchema);
+export default mongoose.model('Task', taskSchema);

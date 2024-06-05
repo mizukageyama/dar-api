@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Task from './task.model';
+import Status from './status.model';
 import { PaginationQueryWithSearchKey } from '../../../helpers/paginationQuery';
 
 export async function getTasks(
@@ -66,15 +67,23 @@ export async function getTask(req: Request, res: Response) {
 
 export async function createTask(req: Request, res: Response) {
   try {
-    const { title, remarks = '', userId, statusId = 1 } = req.body;
+    const { title, remarks = '', userId, status = 'notStarted' } = req.body;
+
+    const defaultStatus = await Status.findOne({ name: status });
+    if (!defaultStatus) {
+      return res.status(500).json({
+        error: `The status ${status} of task not found in the database.`,
+      });
+    }
 
     const createdTask = await Task.create({
       title,
       remarks,
       user: userId,
-      status: statusId,
+      status: defaultStatus._id,
     });
-    return res.status(201).json({ data: createdTask });
+
+    res.status(201).json({ data: createdTask });
   } catch (error) {
     console.error('Error creating task: ', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -84,7 +93,7 @@ export async function createTask(req: Request, res: Response) {
 export async function updateTask(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const { title, userId, remarks, statusId } = req.body;
+    const { title, userId, remarks = '', status = '' } = req.body;
 
     let existingTask = await Task.findById(id);
     if (!existingTask) {
@@ -100,12 +109,24 @@ export async function updateTask(req: Request, res: Response) {
     }
 
     existingTask.title = title;
-    existingTask.remarks = remarks;
-    existingTask.status = statusId;
+
+    if (remarks) {
+      existingTask.remarks = remarks;
+    }
+
+    if (status) {
+      const taskStatus = await Status.findOne({ name: status });
+      if (!taskStatus) {
+        return res.status(500).json({
+          error: `The status ${status} of task not found in the database.`,
+        });
+      }
+      existingTask.status = taskStatus._id;
+    }
 
     await existingTask.updateOne();
 
-    return res.status(200).json({ data: existingTask });
+    res.status(200).json({ data: existingTask });
   } catch (error) {
     console.error('Error updating task: ', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -132,7 +153,7 @@ export async function deleteTask(req: Request, res: Response) {
 
     await existingTask.deleteOne();
 
-    return res.status(204).end();
+    res.status(204).end();
   } catch (error) {
     console.error('Error deleting task: ', error);
     res.status(500).json({ error: 'Internal server error' });

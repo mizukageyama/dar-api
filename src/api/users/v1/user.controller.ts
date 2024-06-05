@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import User from './user.model';
 import Role from './role.model';
 import { PaginationQueryWithSearchKey } from '../../../helpers/paginationQuery';
+import { validationResult } from 'express-validator';
 
 export async function getUsers(
   req: Request<any, any, any, PaginationQueryWithSearchKey>,
@@ -35,6 +36,11 @@ export async function getUsers(
 
 export async function getUser(req: Request, res: Response) {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const { id } = req.params;
     const { userId, userRole } = req.body;
 
@@ -62,6 +68,11 @@ export async function getUser(req: Request, res: Response) {
 
 export async function createUser(req: Request, res: Response) {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const { email, firstName, lastName } = req.body;
 
     const existingUser = await User.findOne({ email });
@@ -71,7 +82,20 @@ export async function createUser(req: Request, res: Response) {
         .json({ message: `User with email of ${email} already exists.` });
     }
 
-    const createdUser = await User.create({ email, firstName, lastName });
+    const defaultRole = await Role.findOne({ name: 'free' });
+    if (!defaultRole) {
+      return res.status(500).json({
+        error: 'Internal server error: Default role not found in the database.',
+      });
+    }
+
+    const createdUser = await User.create({
+      email,
+      firstName,
+      lastName,
+      role: defaultRole._id,
+    });
+
     return res.status(201).json({ data: createdUser });
   } catch (error) {
     console.error('Error creating user: ', error);
@@ -81,6 +105,11 @@ export async function createUser(req: Request, res: Response) {
 
 export async function updateUser(req: Request, res: Response) {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const { id } = req.params;
     const { userId, userRole, firstName, lastName } = req.body;
 
@@ -104,7 +133,7 @@ export async function updateUser(req: Request, res: Response) {
 
     await existingUser.updateOne();
 
-    return res.status(200).json({ data: existingUser });
+    res.status(200).json({ data: existingUser });
   } catch (error) {
     console.error('Error updating user: ', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -113,6 +142,11 @@ export async function updateUser(req: Request, res: Response) {
 
 export async function updateUserToAdmin(req: Request, res: Response) {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const { id } = req.params;
 
     let existingUser = await User.findById(id);
@@ -123,10 +157,17 @@ export async function updateUserToAdmin(req: Request, res: Response) {
         .json({ message: `User with id of ${id} does not exist.` });
     }
 
-    // ! existingUser.role! = 2;
+    const adminRole = await Role.findOne({ name: 'admin' });
+    if (!adminRole) {
+      return res
+        .status(500)
+        .json({ error: 'Admin role not found in the database.' });
+    }
+
+    existingUser.role! = adminRole._id;
     await existingUser.updateOne();
 
-    return res.status(200).json({ data: existingUser });
+    res.status(200).json({ data: existingUser });
   } catch (error) {
     console.error('Error updating user: ', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -135,6 +176,11 @@ export async function updateUserToAdmin(req: Request, res: Response) {
 
 export async function deleteUser(req: Request, res: Response) {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const { id } = req.params;
     const deletedUser = await User.findByIdAndDelete(id);
 
@@ -144,7 +190,7 @@ export async function deleteUser(req: Request, res: Response) {
         .json({ message: `User with id of ${id} does not exist.` });
     }
 
-    return res.status(204).end();
+    res.status(204).end();
   } catch (error) {
     console.error('Error deleting user: ', error);
     res.status(500).json({ error: 'Internal server error' });

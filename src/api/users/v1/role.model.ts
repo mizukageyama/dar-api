@@ -1,10 +1,13 @@
 import mongoose from 'mongoose';
 
-const roleSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Role name is required!'],
+const userRoleSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, 'Role name is required!'],
+    },
   },
-});
+  { collection: 'user_roles' }
+);
 
-export default mongoose.model('roles', roleSchema);
+export default mongoose.model('UserRole', userRoleSchema);

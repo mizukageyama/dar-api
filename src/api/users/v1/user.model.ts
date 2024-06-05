@@ -21,12 +21,11 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: Schema.Types.ObjectId,
-      ref: 'Role',
-      required: false,
-      default: '1',
+      ref: 'UserRole',
+      required: [true, 'User role is required!'],
     },
   },
-  { timestamps: true }
+  { timestamps: true, collection: 'users' }
 );
 
-export default mongoose.model('users', userSchema);
+export default mongoose.model('User', userSchema);

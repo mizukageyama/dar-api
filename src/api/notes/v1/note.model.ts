@@ -18,7 +18,7 @@ const roleSchema = new mongoose.Schema(
       required: [true, 'User Id is required!'],
     },
   },
-  { timestamps: true }
+  { timestamps: true, collection: 'notes' }
 );
 
-export default mongoose.model('roles', roleSchema);
+export default mongoose.model('Note', roleSchema);

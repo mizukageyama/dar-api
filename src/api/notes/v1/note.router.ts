@@ -7,13 +7,18 @@ import {
   updateNote,
   deleteNote,
 } from './note.controller';
+import {
+  createNoteValidation,
+  noteIdParamValidation,
+  updateNoteValidation,
+} from './note.validation';
 const router = express.Router();
 router.use(express.json());
 
 router.get('/', verifyAccessToken, getNotes);
-router.get('/:id', verifyAccessToken, getNote);
-router.post('/', verifyAccessToken, createNote);
-router.patch('/:id', verifyAccessToken, updateNote);
-router.delete('/:id', verifyAccessToken, deleteNote);
+router.get('/:id', verifyAccessToken, noteIdParamValidation, getNote);
+router.post('/', verifyAccessToken, createNoteValidation, createNote);
+router.patch('/:id', verifyAccessToken, updateNoteValidation, updateNote);
+router.delete('/:id', verifyAccessToken, noteIdParamValidation, deleteNote);
 
 export default router;
