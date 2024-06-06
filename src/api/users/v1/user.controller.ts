@@ -52,7 +52,7 @@ export async function getUser(req: Request, res: Response) {
     }
 
     if (userRole !== 'admin') {
-      if (existingUser._id !== userId) {
+      if (existingUser._id.toString() !== userId) {
         return res
           .status(403)
           .json({ message: `You are unauthorized to view other user's task.` });
@@ -121,7 +121,7 @@ export async function updateUser(req: Request, res: Response) {
     }
 
     if (userRole !== 'admin') {
-      if (existingUser._id !== userId) {
+      if (existingUser._id.toString() !== userId) {
         return res
           .status(403)
           .json({ message: `You are unauthorized to update other user.` });

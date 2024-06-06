@@ -51,7 +51,7 @@ export async function getNote(req: Request, res: Response) {
         .json({ message: `Note with id of ${id} does not exist.` });
     }
 
-    if (existingNote.user._id !== userId) {
+    if (existingNote.user._id.toString() !== userId) {
       return res
         .status(403)
         .json({ message: `You are unauthorized to view other user's note.` });
@@ -92,7 +92,7 @@ export async function updateNote(req: Request, res: Response) {
         .json({ message: `Note with id of ${id} does not exist.` });
     }
 
-    if (existingNote.user._id !== userId) {
+    if (existingNote.user._id.toString() !== userId) {
       return res
         .status(403)
         .json({ message: `You are unauthorized to update other user's note.` });
@@ -122,7 +122,7 @@ export async function deleteNote(req: Request, res: Response) {
         .json({ message: `Note with id of ${id} does not exist.` });
     }
 
-    if (existingNote.user._id !== userId) {
+    if (existingNote.user._id.toString() !== userId) {
       return res
         .status(403)
         .json({ message: `You are unauthorized to delete other user's note.` });

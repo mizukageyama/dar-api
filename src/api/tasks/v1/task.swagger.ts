@@ -63,13 +63,13 @@
  *                 type: string
  *               remarks:
  *                 type: string
- *               statusId:
- *                 type: string
  *             required:
  *               - title
  *     responses:
  *       201:
  *         description: Successful response returning created taks.
+ *       400:
+ *         description: Bad request error.
  *       500:
  *         description: Internal server error.
  *
@@ -91,6 +91,8 @@
  *     responses:
  *       200:
  *         description: Successful response returning task.
+ *       400:
+ *         description: Bad request error.
  *       401:
  *         description: Access token is missing or invalid.
  *       404:
@@ -125,15 +127,17 @@
  *                 type: string
  *               remarks:
  *                 type: string
- *               statusId:
+ *               status:
  *                 type: string
  *             required:
  *               - title
  *               - remarks
- *               - statusId
+ *               - status
  *     responses:
  *       200:
  *         description: Successful response returning updated task.
+ *       400:
+ *         description: Bad request error.
  *       401:
  *         description: Access token is missing or invalid.
  *       404:
@@ -160,6 +164,8 @@
  *     responses:
  *       204:
  *         description: Successful response deleting task.
+ *       400:
+ *         description: Bad request error.
  *       401:
  *         description: Access token is missing or invalid.
  *       404:
