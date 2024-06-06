@@ -3,6 +3,8 @@ import User from './user.model';
 import Role from './role.model';
 import { PaginationQueryWithSearchKey } from '../../../helpers/paginationQuery';
 import { validationResult } from 'express-validator';
+import { plainToClass } from 'class-transformer';
+import { UserDTO } from './user.dto';
 
 export async function getUsers(
   req: Request<any, any, any, PaginationQueryWithSearchKey>,
@@ -27,7 +29,11 @@ export async function getUsers(
       .limit(pageSize)
       .exec();
 
-    res.status(200).json({ data: users });
+    const userDTOs = users.map((user) =>
+      plainToClass(UserDTO, user, { excludeExtraneousValues: true })
+    );
+
+    res.status(200).json({ data: userDTOs });
   } catch (error) {
     console.error('Error getting user: ', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -59,7 +65,11 @@ export async function getUser(req: Request, res: Response) {
       }
     }
 
-    res.status(200).json({ data: existingUser });
+    const userDTO = plainToClass(UserDTO, existingUser, {
+      excludeExtraneousValues: true,
+    });
+
+    res.status(200).json({ data: userDTO });
   } catch (error) {
     console.error('Error getting task: ', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -96,7 +106,11 @@ export async function createUser(req: Request, res: Response) {
       role: defaultRole._id,
     });
 
-    return res.status(201).json({ data: createdUser });
+    const userDTO = plainToClass(UserDTO, createdUser, {
+      excludeExtraneousValues: true,
+    });
+
+    res.status(201).json({ data: userDTO });
   } catch (error) {
     console.error('Error creating user: ', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -131,9 +145,13 @@ export async function updateUser(req: Request, res: Response) {
     existingUser.firstName = firstName;
     existingUser.lastName = lastName;
 
-    await existingUser.updateOne();
+    await existingUser.save();
 
-    res.status(200).json({ data: existingUser });
+    const userDTO = plainToClass(UserDTO, existingUser, {
+      excludeExtraneousValues: true,
+    });
+
+    res.status(200).json({ data: userDTO });
   } catch (error) {
     console.error('Error updating user: ', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -165,9 +183,13 @@ export async function updateUserToAdmin(req: Request, res: Response) {
     }
 
     existingUser.role! = adminRole._id;
-    await existingUser.updateOne();
+    await existingUser.save();
 
-    res.status(200).json({ data: existingUser });
+    const userDTO = plainToClass(UserDTO, existingUser, {
+      excludeExtraneousValues: true,
+    });
+
+    res.status(200).json({ data: userDTO });
   } catch (error) {
     console.error('Error updating user: ', error);
     res.status(500).json({ error: 'Internal server error' });
