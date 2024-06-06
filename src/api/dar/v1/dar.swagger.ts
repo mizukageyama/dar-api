@@ -15,10 +15,10 @@
  *       - in: query
  *         name: date
  *         schema:
- *           type: date
+ *           type: string
  *           format: date
  *         required: true
- *         description: Date to filter daily accomplishment report.
+ *         description: Date to filter daily accomplishment report (YYYY-MM-DD).
  *     responses:
  *       200:
  *         description: Successful response returning dar.

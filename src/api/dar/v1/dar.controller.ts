@@ -3,7 +3,8 @@ import { PaginationQueryWithDate } from '../../../helpers/paginationQuery';
 import Task from '../../tasks/v1/task.model';
 import User from '../../users/v1/user.model';
 import { plainToClass } from 'class-transformer';
-import { TaskDTO } from '../../tasks/v1/task.dto';
+import { DarTaskDTO, TaskDTO } from '../../tasks/v1/task.dto';
+import { UserDTO } from '../../users/v1/user.dto';
 
 export async function getDar(
   req: Request<any, any, any, PaginationQueryWithDate>,
@@ -13,30 +14,42 @@ export async function getDar(
     const { userId } = req.body;
     const { date = Date.now(), sortOrder = 'asc' } = req.params;
 
-    console.log(date);
-    console.log(date.toLocaleDateString());
+    const parsedDate = new Date(date);
+
+    const startDate = new Date(parsedDate);
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(parsedDate);
+    endDate.setHours(23, 59, 59, 999);
 
     const query: any = date
       ? {
-          createdAt: date.toLocaleDateString(),
+          createdAt: {
+            $gte: startDate,
+            $lte: endDate,
+          },
         }
       : {};
 
-    const tasks = await Task.find({ ...query, user: userId }).sort({
-      createdAt: sortOrder,
-    });
+    const tasks = await Task.find({ ...query, user: userId })
+      .populate(['user', 'status'])
+      .sort({
+        createdAt: sortOrder,
+      });
 
     const taskDTOs = tasks.map((task) =>
-      plainToClass(TaskDTO, task, { excludeExtraneousValues: true })
+      plainToClass(DarTaskDTO, task, { excludeExtraneousValues: true })
     );
 
     const user = await User.findById(userId);
+    const userDTO = plainToClass(UserDTO, user, {
+      excludeExtraneousValues: true,
+    });
 
     res.status(200).json({
       data: {
         title: 'Daily Accomplishment Report',
-        user: user,
-        date: date,
+        user: userDTO,
+        date: startDate.toISOString().split('T')[0],
         accomplishment: taskDTOs,
       },
     });

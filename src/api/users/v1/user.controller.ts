@@ -4,7 +4,7 @@ import Role from './role.model';
 import { PaginationQueryWithSearchKey } from '../../../helpers/paginationQuery';
 import { validationResult } from 'express-validator';
 import { plainToClass } from 'class-transformer';
-import { UserDTO } from './user.dto';
+import { UserDTO, UserWithRoleDTO } from './user.dto';
 
 export async function getUsers(
   req: Request<any, any, any, PaginationQueryWithSearchKey>,
@@ -24,13 +24,14 @@ export async function getUsers(
       : {};
 
     const users = await User.find(query)
+      .populate('role')
       .sort({ lastName: sortOrder })
       .skip(skip)
       .limit(pageSize)
       .exec();
 
     const userDTOs = users.map((user) =>
-      plainToClass(UserDTO, user, { excludeExtraneousValues: true })
+      plainToClass(UserWithRoleDTO, user, { excludeExtraneousValues: true })
     );
 
     res.status(200).json({ data: userDTOs });
@@ -50,7 +51,7 @@ export async function getUser(req: Request, res: Response) {
     const { id } = req.params;
     const { userId, userRole } = req.body;
 
-    let existingUser = await User.findById(id);
+    let existingUser = await User.findById(id).populate('role');
     if (!existingUser) {
       return res
         .status(404)
@@ -65,7 +66,7 @@ export async function getUser(req: Request, res: Response) {
       }
     }
 
-    const userDTO = plainToClass(UserDTO, existingUser, {
+    const userDTO = plainToClass(UserWithRoleDTO, existingUser, {
       excludeExtraneousValues: true,
     });
 
@@ -106,7 +107,9 @@ export async function createUser(req: Request, res: Response) {
       role: defaultRole._id,
     });
 
-    const userDTO = plainToClass(UserDTO, createdUser, {
+    const populatedUser = await createdUser.populate('role');
+
+    const userDTO = plainToClass(UserWithRoleDTO, populatedUser, {
       excludeExtraneousValues: true,
     });
 
@@ -127,7 +130,7 @@ export async function updateUser(req: Request, res: Response) {
     const { id } = req.params;
     const { userId, userRole, firstName, lastName } = req.body;
 
-    let existingUser = await User.findById(id);
+    let existingUser = await User.findById(id).populate('role');
     if (!existingUser) {
       return res
         .status(404)
@@ -147,7 +150,7 @@ export async function updateUser(req: Request, res: Response) {
 
     await existingUser.save();
 
-    const userDTO = plainToClass(UserDTO, existingUser, {
+    const userDTO = plainToClass(UserWithRoleDTO, existingUser, {
       excludeExtraneousValues: true,
     });
 
@@ -167,7 +170,7 @@ export async function updateUserToAdmin(req: Request, res: Response) {
 
     const { id } = req.params;
 
-    let existingUser = await User.findById(id);
+    let existingUser = await User.findById(id).populate('role');
 
     if (!existingUser) {
       return res
@@ -185,7 +188,7 @@ export async function updateUserToAdmin(req: Request, res: Response) {
     existingUser.role! = adminRole._id;
     await existingUser.save();
 
-    const userDTO = plainToClass(UserDTO, existingUser, {
+    const userDTO = plainToClass(UserWithRoleDTO, existingUser, {
       excludeExtraneousValues: true,
     });
 

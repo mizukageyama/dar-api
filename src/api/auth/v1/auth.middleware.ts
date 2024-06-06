@@ -17,10 +17,7 @@ async function verifyTokenId(req: Request, res: Response, next: NextFunction) {
   try {
     const ticket = await oAuth2Client.verifyIdToken({
       idToken: token,
-      audience: [
-        process.env.IOS_APP_GOOGLE_CLIENT_ID!,
-        process.env.ANDROID_APP_GOOGLE_CLIENT_ID!,
-      ],
+      audience: process.env.IOS_APP_GOOGLE_CLIENT_ID!,
     });
 
     const payload = ticket.getPayload();
@@ -34,7 +31,9 @@ async function verifyTokenId(req: Request, res: Response, next: NextFunction) {
     }
   } catch (error) {
     console.error('Error: ', error);
-    res.status(500).json({ error: 'Unable to verify id token.' });
+    return res.status(401).json({
+      error: 'Unauthorized: Unable to verify token or it has expired.',
+    });
   }
 }
 

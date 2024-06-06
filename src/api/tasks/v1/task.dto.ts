@@ -33,3 +33,22 @@ export class TaskDTO {
   @Expose()
   createdAt!: Date;
 }
+
+export class DarTaskDTO {
+  @Expose()
+  @Transform((params) => params.obj._id)
+  _id!: string;
+
+  @Expose()
+  title!: string;
+
+  @Expose()
+  remarks?: string;
+
+  @Expose()
+  @Type(() => StatusDTO)
+  status!: StatusDTO;
+
+  @Expose()
+  createdAt!: Date;
+}
