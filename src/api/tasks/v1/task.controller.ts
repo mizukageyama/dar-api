@@ -104,7 +104,9 @@ export async function createTask(req: Request, res: Response) {
       status: defaultStatus._id,
     });
 
-    const taskDTO = plainToClass(TaskDTO, createdTask, {
+    const populatedTask = await createdTask.populate(['user', 'status']);
+
+    const taskDTO = plainToClass(TaskDTO, populatedTask, {
       excludeExtraneousValues: true,
     });
 
@@ -125,7 +127,7 @@ export async function updateTask(req: Request, res: Response) {
     const { id } = req.params;
     const { title, userId, remarks = '', status = '' } = req.body;
 
-    let existingTask = await Task.findById(id);
+    let existingTask = await Task.findById(id).populate(['user', 'status']);
     if (!existingTask) {
       return res
         .status(404)

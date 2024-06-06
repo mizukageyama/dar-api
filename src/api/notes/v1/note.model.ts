@@ -1,7 +1,7 @@
 import { timeStamp } from 'console';
 import mongoose, { Schema } from 'mongoose';
 
-const roleSchema = new mongoose.Schema(
+const noteSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -21,4 +21,4 @@ const roleSchema = new mongoose.Schema(
   { timestamps: true, collection: 'notes' }
 );
 
-export default mongoose.model('Note', roleSchema);
+export default mongoose.model('Note', noteSchema);

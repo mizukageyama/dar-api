@@ -4,6 +4,7 @@ import { UserDTO } from '../../users/v1/user.dto';
 
 class StatusDTO {
   @Expose()
+  @Transform((params) => params.obj._id)
   _id!: string;
 
   @Expose()
@@ -12,6 +13,7 @@ class StatusDTO {
 
 export class TaskDTO {
   @Expose()
+  @Transform((params) => params.obj._id)
   _id!: string;
 
   @Expose()

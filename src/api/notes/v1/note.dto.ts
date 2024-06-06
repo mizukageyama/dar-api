@@ -1,9 +1,10 @@
 import 'reflect-metadata';
-import { Expose, Type } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 import { UserDTO } from '../../users/v1/user.dto';
 
-export class TaskDTO {
+export class NoteDTO {
   @Expose()
+  @Transform((params) => params.obj._id)
   _id!: string;
 
   @Expose()
